@@ -35,71 +35,77 @@ function initLogin() {
         clearMessage();
     });
 
-    // Handle login
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+    // Handle login and registration when Firebase auth is not active
+    if (!window.useFirebaseAuth) {
+        // Handle login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-        // Get all users from localStorage
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const user = users.find(u => u.email === email && u.password === password);
+            // Get all users from localStorage
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
 
-        if (user) {
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            showMessage('تم تسجيل الدخول بنجاح!', 'success');
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                showMessage('تم تسجيل الدخول بنجاح!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } else {
+                showMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
+            }
+
+            loginForm.reset();
+        });
+
+        // Handle registration
+        registerBtn.addEventListener('click', () => {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            if (!name || !email || !password) {
+                showMessage('الرجاء ملء جميع الحقول', 'error');
+                return;
+            }
+
+            // Get all users
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Check if email already exists
+            if (users.some(u => u.email === email)) {
+                showMessage('هذا البريد الإلكتروني مسجل بالفعل', 'error');
+                return;
+            }
+
+            // Add new user
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                password: password
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            showMessage('تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول', 'success');
+            
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1000);
-        } else {
-            showMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
-        }
-
-        loginForm.reset();
-    });
-
-    // Handle registration
-    registerBtn.addEventListener('click', () => {
-        const name = document.getElementById('regName').value;
-        const email = document.getElementById('regEmail').value;
-        const password = document.getElementById('regPassword').value;
-
-        if (!name || !email || !password) {
-            showMessage('الرجاء ملء جميع الحقول', 'error');
-            return;
-        }
-
-        // Get all users
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        
-        // Check if email already exists
-        if (users.some(u => u.email === email)) {
-            showMessage('هذا البريد الإلكتروني مسجل بالفعل', 'error');
-            return;
-        }
-
-        // Add new user
-        const newUser = {
-            id: Date.now(),
-            name: name,
-            email: email,
-            password: password
-        };
-
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-
-        showMessage('تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول', 'success');
-        
-        setTimeout(() => {
-            registerForm.classList.add('hidden');
-            loginForm.classList.remove('hidden');
-            document.getElementById('email').value = email;
-            document.getElementById('password').value = '';
-            clearMessage();
-        }, 1500);
-    });
+                registerForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                document.getElementById('email').value = email;
+                document.getElementById('password').value = '';
+                clearMessage();
+            }, 1500);
+        });
+    } else {
+        // When using Firebase auth, the login/register flow is handled in index.html module script.
+        console.log('Firebase auth active: skipping local auth handlers.');
+    }
 
     function showMessage(msg, type) {
         loginMessage.textContent = msg;
