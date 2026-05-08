@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bronts Cach - مصرفك الموثوق</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="bank-logo">🏦</div>
+                <h1>Bronts Cach</h1>
+                <p class="tagline">إدارة مهامك بسهولة</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+                </div>
+
+                <button type="submit" class="btn-primary">تسجيل الدخول</button>
+            </form>
+
+            <div class="login-divider">أو</div>
+
+            <button id="registerToggle" class="btn-secondary">إنشاء حساب جديد</button>
+
+            <div id="registerForm" class="register-form hidden">
+                <div class="form-group">
+                    <label for="regName">الاسم الكامل</label>
+                    <input type="text" id="regName" placeholder="أدخل اسمك" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">البريد الإلكتروني</label>
+                    <input type="email" id="regEmail" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">كلمة المرور</label>
+                    <input type="password" id="regPassword" placeholder="أنشئ كلمة مرور" required>
+                </div>
+
+                <button type="button" id="registerBtn" class="btn-primary">إنشاء حساب</button>
+                <button type="button" id="cancelRegister" class="btn-secondary">إلغاء</button>
+            </div>
+
+            <div id="loginMessage" class="message"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getDatabase, ref, set, update, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAllR8reVzvWYpE3pYrQRwyWfhWlL_cF4Y",
+            authDomain: "bronts-cach.firebaseapp.com",
+            databaseURL: "https://bronts-cach-default-rtdb.firebaseio.com/",
+            projectId: "bronts-cach",
+            storageBucket: "bronts-cach.firebasestorage.app",
+            messagingSenderId: "676278648621",
+            appId: "1:676278648621:web:cc8d2c05a99dfa326f5da4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        window.useFirebaseAuth = true;
+        window.db = db;
+        window.ref = ref;
+        window.set = set;
+        window.get = get;
+        window.child = child;
+        window.auth = auth;
+
+        // إنشاء حساب باستخدام Firebase Auth
+        document.getElementById("registerBtn").addEventListener("click", () => {
+            const email = document.getElementById("regEmail").value;
+            const password = document.getElementById("regPassword").value;
+            const name = document.getElementById("regName").value || email;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        id: user.uid,
+                        name: name,
+                        email: user.email,
+                        password: password
+                    }));
+                    document.getElementById("loginMessage").innerText = "تم إنشاء الحساب ✅";
+                    set(ref(db, 'users/' + user.uid), {
+                        name: name,
+                        email: user.email,
+                        balance: 0,
+                        createdAt: new Date().toISOString()
+                    });
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                })
+                .catch((error) => {
+                    document.getElementById("loginMessage").innerText = error.message;
+                });
+        });
+
+        // تسجيل الدخول باستخدام Firebase Auth
+        document.getElementById("loginForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        id: user.uid,
+                        name: user.email,
+                        email: user.email,
+                        password: password
+                    }));
+                    document.getElementById("loginMessage").innerText = "مرحبا بك ✅";
+                    update(ref(db, 'users/' + user.uid), {
+                        email: user.email,
+                        loggedInAt: new Date().toISOString()
+                    });
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                })
+                .catch((error) => {
+                    document.getElementById("loginMessage").innerText = error.message;
+                });
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                update(ref(db, 'users/' + user.uid), {
+                    authState: 'signed-in',
+                    timestamp: new Date().toISOString()
+                });
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+
+</body>
+</html>

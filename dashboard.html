@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة المهام - Bronts Cach</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header/Navbar -->
+        <header class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-left">
+                    <div class="bank-logo-small">🏦</div>
+                    <h1>Bronts Cach</h1>
+                </div>
+                <div class="navbar-right">
+                    <span id="userName" class="user-name"></span>
+                    <button id="logoutBtn" class="btn-logout">تسجيل الخروج</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="dashboard-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>الملخص</h3>
+                    <div class="stat-box">
+                        <div class="stat-label">إجمالي المهام</div>
+                        <div class="stat-value" id="totalTasks">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">المهام المكتملة</div>
+                        <div class="stat-value" id="completedTasks">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">المهام المتبقية</div>
+                        <div class="stat-value" id="pendingTasks">0</div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>الفئات</h3>
+                    <div class="category-filter">
+                        <button class="category-btn active" data-filter="all">الكل</button>
+                        <button class="category-btn" data-filter="work">العمل</button>
+                        <button class="category-btn" data-filter="personal">شخصي</button>
+                        <button class="category-btn" data-filter="finance">مالي</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Area -->
+            <main class="main-area">
+                <!-- Bank Card Section -->
+                <div class="bank-section">
+                    <h2>محفظتي 💳</h2>
+                    <div class="bank-card">
+                        <div class="card-header">
+                            <span class="bank-name">Bronts Cach Bank</span>
+                            <span class="card-type">💎 Platinum</span>
+                        </div>
+                        <div class="card-number" id="cardNumber">**** **** **** 1234</div>
+                        <div class="card-footer">
+                            <div class="card-holder">
+                                <small>اسم صاحب البطاقة</small>
+                                <div id="cardHolder">Mohammed Ali</div>
+                            </div>
+                            <div class="card-expiry">
+                                <small>صلاحية</small>
+                                <div>12/28</div>
+                            </div>
+                            <div class="card-cvv">
+                                <small>CVV</small>
+                                <div>***</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wallet Section -->
+                    <div class="wallet-section">
+                        <h3>الرصيد والعملات</h3>
+                        <div class="wallet-cards">
+                            <div class="wallet-card main">
+                                <div class="wallet-currency">💵 دولار أمريكي</div>
+                                <div class="wallet-amount" id="usdBalance">$0.00</div>
+                                <div class="wallet-label">الرصيد الأساسي</div>
+                            </div>
+                            <div class="wallet-card">
+                                <div class="wallet-currency">€ يورو</div>
+                                <div class="wallet-amount" id="eurBalance">€0.00</div>
+                                <div class="wallet-label">الرصيد الثانوي</div>
+                            </div>
+                            <div class="wallet-card">
+                                <div class="wallet-currency">﷼ ريال سعودي</div>
+                                <div class="wallet-amount" id="sarBalance">﷼0.00</div>
+                                <div class="wallet-label">الرصيد المحلي</div>
+                            </div>
+                            <div class="wallet-card">
+                                <div class="wallet-currency">💎 درهم مغربي</div>
+                                <div class="wallet-amount" id="madBalance">د.م.0.00</div>
+                                <div class="wallet-label">رصيد إضافي</div>
+                            </div>
+                            <div class="wallet-card">
+                                <div class="wallet-currency">🎁 نقاط</div>
+                                <div class="wallet-amount" id="pointsBalance">0</div>
+                                <div class="wallet-label">نقاط المكافآت</div>
+                            </div>
+                        </div>
+
+                        <!-- Add/Remove Funds Section -->
+                        <div class="funds-section">
+                            <h3 style="margin-top: 20px;">إدارة الأموال</h3>
+                            <div class="funds-buttons">
+                                <button id="addMoneyBtn" class="btn-funds add">➕ إضافة أموال</button>
+                                <button id="removeMoneyBtn" class="btn-funds remove">➖ سحب أموال</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="transactions-section">
+                        <h3>آخر المعاملات</h3>
+                        <div class="transactions-list" id="transactionsList">
+                            <!-- Transactions will be added here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Task Section -->
+                <div class="add-task-section">
+                    <h2>إضافة مهمة جديدة</h2>
+                    <form id="addTaskForm" class="task-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" id="taskTitle" placeholder="عنوان المهمة" required>
+                            </div>
+                            <div class="form-group">
+                                <select id="taskCategory">
+                                    <option value="personal">شخصي</option>
+                                    <option value="work">العمل</option>
+                                    <option value="finance">مالي</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="date" id="taskDueDate">
+                            </div>
+                            <button type="submit" class="btn-primary">إضافة المهمة</button>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="taskDescription" placeholder="وصف المهمة (اختياري)" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tasks List -->
+                <div class="tasks-section">
+                    <h2>المهام</h2>
+                    <div id="tasksList" class="tasks-list">
+                        <div class="empty-state">
+                            <p>لا توجد مهام حالياً</p>
+                            <p class="text-small">أضف مهمة جديدة للبدء</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div id="taskModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تفاصيل المهمة</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button type="button" id="deleteTaskBtn" class="btn-danger">حذف المهمة</button>
+                <button type="button" id="closeModalBtn" class="btn-secondary">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Money Transaction Modal -->
+    <div id="moneyModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="moneyModalTitle">إضافة أموال</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="moneyForm" class="money-form">
+                    <div class="form-group">
+                        <label for="moneyAmount">المبلغ</label>
+                        <input type="number" id="moneyAmount" placeholder="أدخل المبلغ" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="moneyCurrency">العملة</label>
+                        <select id="moneyCurrency">
+                            <option value="usd">دولار أمريكي (USD)</option>
+                            <option value="eur">يورو (EUR)</option>
+                            <option value="sar">ريال سعودي (SAR)</option>
+                            <option value="mad">درهم مغربي (MAD)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="moneyPassword">كلمة المرور (للتأكيد)</label>
+                        <input type="password" id="moneyPassword" placeholder="أدخل كلمة المرور الخاصة بك" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="moneyDescription">الوصف (اختياري)</label>
+                        <textarea id="moneyDescription" placeholder="مثال: تحويل من حسابي" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" id="moneySubmitBtn">إضافة أموال</button>
+                </form>
+                <div id="moneyMessage" class="message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getDatabase, ref, set, update, push, get, child, remove } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAllR8reVzvWYpE3pYrQRwyWfhWlL_cF4Y",
+            authDomain: "bronts-cach.firebaseapp.com",
+            databaseURL: "https://bronts-cach-default-rtdb.firebaseio.com/",
+            projectId: "bronts-cach",
+            storageBucket: "bronts-cach.firebasestorage.app",
+            messagingSenderId: "676278648621",
+            appId: "1:676278648621:web:cc8d2c05a99dfa326f5da4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        window.db = db;
+        window.ref = ref;
+        window.set = set;
+        window.update = update;
+        window.push = push;
+        window.get = get;
+        window.child = child;
+        window.remove = remove;
+        window.auth = auth;
+        window.onAuthStateChanged = onAuthStateChanged;
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
